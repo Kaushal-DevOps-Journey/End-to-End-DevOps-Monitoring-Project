@@ -106,3 +106,4 @@ groups:
       summary: "File System Almost Full (instance {{ $labels.instance }})"
       description: "File system has < 10% free space\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 ```
+<img width="1771" height="991" alt="image" src="https://github.com/user-attachments/assets/d49769a6-131e-4af5-a504-0b9a7bd3fa17" />
