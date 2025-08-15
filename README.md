@@ -154,10 +154,60 @@ cd prometheus-*
 
 **`prometheus.yml` sample:**
 ```yaml
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 18.214.100.108:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  - "alert_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
 scrape_configs:
-  - job_name: "node_exporter"
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "prometheus"
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
     static_configs:
-      - targets: ["<VM-1-IP>:9100"]
+      - targets: ["localhost:9090"]
+        # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+        labels:
+          app: "prometheus"
+
+  - job_name: "node_exporter" # Job name for node exporter
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'
+    static_configs:
+      - targets: ["54.196.207.20:9100"] # Target node exporter endpoint
+
+  - job_name: "blackbox" # Job name for blackbox exporter
+    metrics_path: /probe # Path for blackbox probe
+    params:
+      module: [http_2xx] # Module to look for HTTP 200 response
+    static_configs:
+      - targets:
+          - "http://prometheus.io" # HTTP target
+          - "https://prometheus.io" # HTTPS target
+          - "http://54.196.207.20:8080" # HTTP target with port 8080
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 18.214.100.108:9115 # Blackbox exporter address
+
 ```
 
 ### 3️⃣ Setup Alertmanager on VM-2
@@ -208,8 +258,10 @@ sudo systemctl enable grafana-server
 sudo systemctl start grafana-server
 ```
 
-Login at: **http://<VM-2-IP>:3000** (Default user: `admin` / password: `admin`).
-
+Login at: 
+```
+**http://<VM-2-IP>:3000** (Default user: `admin` / password: `admin`).
+```
 ---
 
 ## 🚨 Alerts
