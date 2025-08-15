@@ -161,32 +161,35 @@ scrape_configs:
 ```
 
 ### 3️⃣ Setup Alertmanager on VM-2
-**`alertmanager.yml` sample:**
+**`alertmanager.yml`:**
 ```yaml
 route:
-  group_by: ['alertname']
+  group_by:
+    - alertname
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 1h
-  receiver: 'email-notifications'
-
+  receiver: email-notifications
 receivers:
-  - name: 'email-notifications'
+  - name: email-notifications
     email_configs:
-      - to: your_email@gmail.com
-        from: sender_email@gmail.com
+      - to: kaushalkumar5407@gmail.com
+        from: Monitoring_Test@gmail.com
         smarthost: smtp.gmail.com:587
-        auth_username: sender_email@gmail.com
-        auth_identity: sender_email@gmail.com
-        auth_password: "your_app_password"
+        auth_username: kaushalkumar5407@gmail.com
+        auth_identity: kaushalkumar5407@gmail.com
+        auth_password: hbgj pagz lnwy ayph
         send_resolved: true
+
 
 inhibit_rules:
   - source_match:
-      severity: 'critical'
+      severity: 'critical'            # Source alert severity
     target_match:
-      severity: 'warning'
-    equal: ['alertname', 'dev', 'instance']
+      severity: 'warning'             # Target alert severity
+    equal: ['alertname', 'dev', 'instance']  # Fields to match
+
+
 ```
 
 Start Alertmanager:
