@@ -1,9 +1,7 @@
-# Ultimate-DevOps-Monitoring-Project
-
 # Monitoring & Alerting System with Prometheus, Grafana, Blackbox Exporter & Node Exporter and Alertmanager
 
 ## 📌 Project Overview
-This project sets up a monitoring and alerting system for an Nginx server running on **VM-1** using **Prometheus**, **Node Exporter**, **Alertmanager**, and **Grafana** hosted on **VM-2**. Alerts are sent via Gmail when specified conditions are met.
+This project sets up a monitoring and alerting system for an **Java application** and **Node Exporter** running on **VM-1** using **Prometheus**, **Blackbox Exporter**, **Alertmanager**, and **Grafana** hosted on **VM-2**. Alerts are sent via Gmail when specified conditions are met.
  
 
 It uses **two virtual machines**:
@@ -29,7 +27,8 @@ It uses **two virtual machines**:
   - **Java application** → Application being monitored.
 
 - **VM-2**:  
-  - **Prometheus** → Scrapes metrics from Node Exporter.  
+  - **Prometheus** → Scrapes metrics from Node Exporter and Blackbox Exporter.
+  - **Blackbox Exporter** → Collects application metrics
   - **Alertmanager** → Sends alerts via Gmail when conditions are triggered.  
   - **Grafana** → Visualizes metrics with custom dashboards.
 
@@ -126,7 +125,6 @@ VM-1: Node Exporter + Java application --> Prometheus (VM-2) --> Alertmanager (V
                                        |
                                     Grafana (VM-2)
 ```
-*(A graphical diagram is available in the `/images` folder)*
 
 ---
 
@@ -151,7 +149,7 @@ tar xvf prometheus-*.tar.gz
 cd prometheus-*
 
 # Start Prometheus
-./prometheus --config.file=prometheus.yml &
+./prometheus &
 ```
 
 **`prometheus.yml` sample:**
@@ -193,7 +191,7 @@ inhibit_rules:
 
 Start Alertmanager:
 ```bash
-./alertmanager --config.file=alertmanager.yml &
+./alertmanager &
 ```
 
 ### 4️⃣ Setup Grafana on VM-2
@@ -228,23 +226,13 @@ Login at: **http://<VM-2-IP>:3000** (Default user: `admin` / password: `admin`).
 - Import Prometheus as a data source.
 - Create panels to visualize CPU, memory, and disk usage.
 
----
 
-## 📂 File Structure
-```
-/project
-  ├── prometheus.yml
-  ├── alertmanager.yml
-  ├── images/
-  │     └── architecture.png
-  ├── README.md
-```
 
 ---
 
 ## ✅ Summary
 - **VM-1** runs Java application & Node Exporter.
-- **VM-2** runs Prometheus, Alertmanager, and Grafana.
+- **VM-2** runs Prometheus, Blackbox Exporter, Alertmanager, and Grafana.
 - Email alerts sent via Gmail when alerts trigger.
 - Grafana visualizes metrics from Prometheus.
 
