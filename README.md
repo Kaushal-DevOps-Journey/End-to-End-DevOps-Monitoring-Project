@@ -22,8 +22,8 @@ VM1: Monitoring Server
 ├── Prometheus
 ├── Blackbox Exporter
 └── Alertmanager
-│
-▼
+
+
 VM2: Application Server
 ├── Java Application
 └── Node Exporter
