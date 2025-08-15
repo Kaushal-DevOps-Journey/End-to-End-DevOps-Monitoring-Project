@@ -1,15 +1,18 @@
 # Ultimate-DevOps-Monitoring-Project
 
-Monitoring Project with Prometheus, Alertmanager, Blackbox Exporter & Node Exporter
+# Monitoring & Alerting System with Prometheus, Grafana, Blackbox Exporter & Node Exporter and Alertmanager
 
-## 📌 Overview
-This project sets up a monitoring system using **Prometheus** and related exporters to track the health of a Java application and server metrics.  
+## 📌 Project Overview
+This project sets up a monitoring and alerting system for an Nginx server running on **VM-1** using **Prometheus**, **Node Exporter**, **Alertmanager**, and **Grafana** hosted on **VM-2**. Alerts are sent via Gmail when specified conditions are met.
+ 
+
 It uses **two virtual machines**:
 
 - **VM1 (Monitoring Server)**:
   - Prometheus
   - Blackbox Exporter
   - Alertmanager
+  - Grafana
 
 - **VM2 (Application Server)**:
   - Java-based application
@@ -20,16 +23,19 @@ It uses **two virtual machines**:
 <img width="1771" height="991" alt="image" src="https://github.com/user-attachments/assets/d49769a6-131e-4af5-a504-0b9a7bd3fa17" />
 
 
-## 🖥️ Architecture
-VM1: Monitoring Server
-├── Prometheus
-├── Blackbox Exporter
-└── Alertmanager
+## 🖥 Architecture
+- **VM-1**:  
+  - **Node Exporter** → Collects system metrics (CPU, memory, disk usage).  
+  - **Java application** → Application being monitored.
 
+- **VM-2**:  
+  - **Prometheus** → Scrapes metrics from Node Exporter.  
+  - **Alertmanager** → Sends alerts via Gmail when conditions are triggered.  
+  - **Grafana** → Visualizes metrics with custom dashboards.
 
-VM2: Application Server
-├── Java Application
-└── Node Exporter
+- **Email (Gmail)** → Receives alert notifications.
+
+---
 
 ## alert_rules.yml  -- Criteria for sending alerts to mail address
 ```bash
@@ -110,3 +116,141 @@ groups:
       description: "File system has < 10% free space\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
 ```
 
+
+
+---
+
+## 📊 Architecture Diagram
+```
+VM-1: Node Exporter + Java application --> Prometheus (VM-2) --> Alertmanager (VM-2) --> Gmail Alerts
+                                       |
+                                    Grafana (VM-2)
+```
+*(A graphical diagram is available in the `/images` folder)*
+
+---
+
+## ⚙ Installation Steps
+
+### 1️⃣ Setup Node Exporter on VM-1
+```bash
+# Download Node Exporter
+wget https://github.com/prometheus/node_exporter/releases/latest/download/node_exporter-1.6.1.linux-amd64.tar.gz
+tar xvf node_exporter-*.tar.gz
+cd node_exporter-*
+
+# Start Node Exporter
+./node_exporter &
+```
+
+### 2️⃣ Setup Prometheus on VM-2
+```bash
+# Download Prometheus
+wget https://github.com/prometheus/prometheus/releases/latest/download/prometheus-2.47.0.linux-amd64.tar.gz
+tar xvf prometheus-*.tar.gz
+cd prometheus-*
+
+# Start Prometheus
+./prometheus --config.file=prometheus.yml &
+```
+
+**`prometheus.yml` sample:**
+```yaml
+scrape_configs:
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["<VM-1-IP>:9100"]
+```
+
+### 3️⃣ Setup Alertmanager on VM-2
+**`alertmanager.yml` sample:**
+```yaml
+route:
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 1h
+  receiver: 'email-notifications'
+
+receivers:
+  - name: 'email-notifications'
+    email_configs:
+      - to: your_email@gmail.com
+        from: sender_email@gmail.com
+        smarthost: smtp.gmail.com:587
+        auth_username: sender_email@gmail.com
+        auth_identity: sender_email@gmail.com
+        auth_password: "your_app_password"
+        send_resolved: true
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']
+```
+
+Start Alertmanager:
+```bash
+./alertmanager --config.file=alertmanager.yml &
+```
+
+### 4️⃣ Setup Grafana on VM-2
+```bash
+sudo apt-get install -y adduser libfontconfig1
+wget https://dl.grafana.com/oss/release/grafana_10.0.3_amd64.deb
+sudo dpkg -i grafana_10.0.3_amd64.deb
+
+# Start Grafana
+sudo systemctl enable grafana-server
+sudo systemctl start grafana-server
+```
+
+Login at: **http://<VM-2-IP>:3000** (Default user: `admin` / password: `admin`).
+
+---
+
+## 🚨 Alerts
+- Email notifications sent via Gmail when system metrics exceed thresholds.
+- Example alert: CPU usage > 80% for 5 minutes.
+
+---
+
+## 📧 Gmail Setup
+1. Enable **2-Step Verification** in your Gmail account.
+2. Generate an **App Password** under Security settings.
+3. Use that password in `alertmanager.yml`.
+
+---
+
+## 📈 Grafana Dashboards
+- Import Prometheus as a data source.
+- Create panels to visualize CPU, memory, and disk usage.
+
+---
+
+## 📂 File Structure
+```
+/project
+  ├── prometheus.yml
+  ├── alertmanager.yml
+  ├── images/
+  │     └── architecture.png
+  ├── README.md
+```
+
+---
+
+## ✅ Summary
+- **VM-1** runs Java application & Node Exporter.
+- **VM-2** runs Prometheus, Alertmanager, and Grafana.
+- Email alerts sent via Gmail when alerts trigger.
+- Grafana visualizes metrics from Prometheus.
+
+---
+
+## 🔗 Useful Links
+- [Prometheus Docs](https://prometheus.io/docs/)
+- [Alertmanager Docs](https://prometheus.io/docs/alerting/latest/alertmanager/)
+- [Grafana Docs](https://grafana.com/docs/)
