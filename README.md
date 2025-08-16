@@ -123,7 +123,7 @@ groups:
 ```
 VM-1: 
   • Node Exporter --> Prometheus (VM-2)
-  • Java Application --> Blackbox Exporter --> Prometheus (VM-2)
+  • Java Application --> Blackbox Exporter (VM-2) --> Prometheus (VM-2)
 
 VM-2: 
   • Prometheus --> Alertmanager --> Gmail Alerts
