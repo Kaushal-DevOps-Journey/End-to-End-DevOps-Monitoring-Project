@@ -121,9 +121,15 @@ groups:
 
 ## 📊 Architecture Diagram
 ```
-VM-1: Node Exporter + Java application --> Prometheus (VM-2) --> Alertmanager (VM-2) --> Gmail Alerts
-                                       |
-                                    Grafana (VM-2)
+VM-1: 
+  • Node Exporter --> Prometheus (VM-2)
+  • Java Application --> Blackbox Exporter --> Prometheus (VM-2)
+
+VM-2: 
+  • Prometheus --> Alertmanager --> Gmail Alerts
+             |
+             --> Grafana (dashboards)
+
 ```
 
 ---
