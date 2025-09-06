@@ -308,7 +308,13 @@ cd blackbox_exporter-*
 - Grafana visualizes metrics from Prometheus.
 
 ---
+## 📊 See The Monitoring Project In Action
 
+Check my LinkedIn post for a full visual walkthrough,
+including Prometheus, Node Exporter, Blackbox Exporter, Alert manager and Grafana in action:
+- [👉 View LinkedIn Post (https://www.linkedin.com/feed/update/urn:li:activity:7362346298743644160/)]
+
+---
 ## 🔗 Useful Links
 - [Prometheus Docs](https://prometheus.io/docs/)
 - [Alertmanager Docs](https://prometheus.io/docs/alerting/latest/alertmanager/)
