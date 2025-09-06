@@ -268,7 +268,7 @@ Login at:
 ```
 **http://<VM-2-IP>:3000** (Default user: `admin` / password: `admin`).
 ```
-### 5 Setup Blackbox Exporter on VM-2
+### 5️⃣ Setup Blackbox Exporter on VM-2
 ```bash
 # Download Prometheus
 wget https://github.com/prometheus/blackbox_exporter/releases/download/v0.25.0/blackbox_exporter-0.25.0.linux-amd64.tar.gz
